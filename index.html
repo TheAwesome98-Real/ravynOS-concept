@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ravynOS concept</title>
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <style>
+      * {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        cursor: default;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: black url(Mountain.jpg) no-repeat fixed center center;
+        background-size: cover;
+      }
+
+      .window {
+        position: absolute;
+        overflow: hidden;
+        border: 1px solid #cdcdcd;
+        background-color: #f4f4f4;
+        border-radius: 15px;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.25);
+      }
+
+      .window.resizable {
+        resize: both;
+      }
+
+      body[data-close-effect="shrink"] .window.closing {
+        animation: close-effect-shrink 0.1s;
+      }
+
+      body[data-close-effect="windows7"] .window.closing {
+        animation: close-effect-windows7 0.1s;
+      }
+
+      @keyframes close-effect-shrink {
+        0% {
+          transform: scale(100%);
+        }
+
+        100% {
+          transform: scale(0%);
+        }
+      }
+
+      @keyframes close-effect-windows7 {
+        0% {
+          opacity: 1;
+          transform: matrix3d(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+
+        100% {
+          opacity: 0;
+          transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        }
+      }
+
+      .window.max {
+        transition: width 0.1s, height 0.1s, border-radius 0.1s;
+        width: 100vw !important;
+        height: 100vh !important;
+        border-radius: 0;
+      }
+
+      .titlebar {
+        border-bottom: 1px solid #cdcdcd;
+        background: linear-gradient(#f4f4f4, #ebebeb);
+        border-radius: 15px 15px 0 0;
+        cursor: grab;
+        height: 32px;
+      }
+
+      .window.max .titlebar {
+        border-radius: 0;
+        transition: border-radius 0.1s;
+      }
+
+      .titlebar .title {
+        float: right;
+        margin-right: calc(50% - 56px);
+        font-size: 10pt;
+        transform: translateY(7px);
+        cursor: inherit;
+      }
+
+      .titlebar:active {
+        cursor: grabbing;
+      }
+
+      .content {
+        overflow-wrap: break-word;
+        display: grid;
+        place-items: center;
+        padding: 0.5rem;
+        min-height: fit-content;
+      }
+
+      button {
+        cursor: pointer;
+        border: 1px solid #bfbfbf;
+        border-radius: 5px;
+        font-size: 12pt;
+        background-color: #ffffff;
+      }
+
+      button:not(.traffic-light) {
+        margin: 8px;
+        padding: 3px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      button:active {
+        background-color: #e6e6e6;
+      }
+
+      select {
+        cursor: pointer;
+        border: 1px solid #bfbfbf;
+        border-radius: 5px;
+        font-size: 12pt;
+        background-color: #ffffff;
+        margin: 8px;
+        padding: 3px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      select:active {
+        background-color: #e6e6e6;
+      }
+
+      body[data-accent-colour="blue"] button.main {
+        border: 1px solid #407ef6;
+        background: linear-gradient(#3faaff, #005aff);
+        color: white;
+      }
+
+      body[data-accent-colour="blue"] button.main:active {
+        background: linear-gradient(#007fe1, #0056ec);
+      }
+
+      body[data-accent-colour="graphite"] button.main {
+        border: 1px solid #7e7e7e;
+        background: linear-gradient(#aaaaaa, #5a5a5a);
+        color: white;
+      }
+
+      body[data-accent-colour="graphite"] button.main:active {
+        background: linear-gradient(#7f7f7f, #565656);
+      }
+
+      body[data-accent-colour="rose"] button.main {
+        border: 1px solid #ef78ff;
+        background: linear-gradient(#ff94ff, #ff6eff);
+        color: white;
+      }
+
+      body[data-accent-colour="rose"] button.main:active {
+        background: linear-gradient(#e400ec, #ce00e1);
+      }
+
+      body[data-accent-colour="lavender"] button.main {
+        border: 1px solid #ac78ff;
+        background: linear-gradient(#c294ff, #a16eff);
+        color: white;
+      }
+
+      body[data-accent-colour="lavender"] button.main:active {
+        background: linear-gradient(#7d2cff, #892eff);
+      }
+
+      button.traffic-light {
+        margin-left: 8px;
+        border-radius: 100%;
+        width: 12px;
+        height: 12px;
+      }
+
+      button.traffic-light.red {
+        margin-left: 10px;
+        border: 1px solid #e55b4f;
+        background-color: #fe6254;
+      }
+
+      button.traffic-light.red:active {
+        border: 1px solid #c24943;
+        background-color: #ac2319;
+      }
+
+      button.traffic-light.amber {
+        border: 1px solid #e4b52f;
+        background-color: #fec72d;
+      }
+
+      button.traffic-light.amber:active {
+        border: 1px solid #a67f16;
+        background-color: #d99f01;
+      }
+
+      button.traffic-light.green {
+        border: 1px solid #26c039;
+        background-color: #29d240;
+      }
+
+      button.traffic-light.green:active {
+        border: 1px solid #26c039;
+        background-color: #187c24;
+      }
+
+      .topbar {
+        height: 24px;
+        color: white;
+        backdrop-filter: blur(32px);
+      }
+
+      .topbar-item {
+        display: inline-block;
+        width: min-content;
+        margin-left: 4px;
+        padding-left: 16px;
+        padding-right: 16px;
+        border-radius: 4px;
+        height: 100%;
+        text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .topbar-item:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .topbar-item:active {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .scrollarea {
+        background: #ffffff;
+        border: 1px solid #dbdbdb;
+        overflow: scroll;
+      }
+    </style>
+    <script>
+      function onDown(self) {
+        self.parentElement.classList.add("moving");
+      }
+
+      function onUp(self) {
+        self.parentElement.classList.remove("moving");
+      }
+
+      function closeWindow(self) {
+        self.parentElement.parentElement.classList.add("closing");
+        setTimeout(() => {
+          self.parentElement.parentElement.remove();
+        }, 100);
+      }
+    </script>
+  </head>
+  <body data-accent-colour="blue" data-close-effect="shrink">
+    <div class="topbar">
+      <span class="topbar-item">
+        <img src="ravynos-mark-inverse.svg" width="20" height="20" /> </span
+      ><span class="topbar-item"><strong>Finder</strong></span
+      ><span class="topbar-item">File</span><span class="topbar-item">Edit</span
+      ><span class="topbar-item">View</span><span class="topbar-item">Go</span
+      ><span class="topbar-item">Window</span
+      ><span class="topbar-item">Help</span>
+    </div>
+    <div
+      class="window"
+      style="width: 320px; height: 440px; left: 69px; top: 48px"
+    >
+      <div class="titlebar" onmousedown="onDown(this)" onmouseup="onUp(this)">
+        <button class="traffic-light red" onclick="closeWindow(this)"></button
+        ><button
+          class="traffic-light amber"
+          onclick="this.parentElement.parentElement.classList.toggle('max')"
+        ></button
+        ><button class="traffic-light green"></button
+        ><span class="title">About This Computer</span>
+      </div>
+      <div class="content">
+        <img src="ravynos-mark.svg" width="128" height="128" />
+        <h2>ravynOS</h2>
+        <span style="color: #808080">Version 0.4.0pre5</span>
+        <button>Software Update...</button>
+        <span><strong>Processor:</strong> 3.6 GHz AMD Ryzen 5 2600X</span>
+        <span><strong>Memory:</strong> 16 GB 2666 MHz DDR4</span>
+        <button>More Info</button>
+        <button class="main" onclick="closeWindow(this)">Close</button>
+      </div>
+    </div>
+    <div
+      class="window"
+      style="width: 320px; height: 220px; left: 512px; top: 24px"
+    >
+      <div class="titlebar" onmousedown="onDown(this)" onmouseup="onUp(this)">
+        <button class="traffic-light red" onclick="closeWindow(this)"></button
+        ><button
+          class="traffic-light amber"
+          onclick="this.parentElement.parentElement.classList.toggle('max')"
+        ></button
+        ><button class="traffic-light green"></button
+        ><span class="title">Theme ravynOS</span>
+      </div>
+      <div class="content">
+        <label for="close-effect"><strong>Close effect: </strong></label>
+        <select
+          name="close-effect"
+          onchange="document.body.setAttribute('data-close-effect', this.value)"
+        >
+          <option value="shrink">Shrink</option>
+          <option value="windows7">Tilt and Fade</option>
+        </select>
+        <label for="accent-colour"><strong>Accent colour: </strong></label>
+        <select
+          name="accent-colour"
+          onchange="document.body.setAttribute('data-accent-colour', this.value)"
+        >
+          <option value="blue" selected="true">Blue</option>
+          <option value="graphite">Graphite</option>
+          <option value="rose">Rose</option>
+          <option value="lavender">Lavender</option>
+        </select>
+      </div>
+    </div>
+    <div
+      class="window"
+      style="width: 640px; height: 440px; left: 896px; top: 128px"
+    >
+      <div class="titlebar" onmousedown="onDown(this)" onmouseup="onUp(this)">
+        <button class="traffic-light red" onclick="closeWindow(this)"></button
+        ><button
+          class="traffic-light amber"
+          onclick="this.parentElement.parentElement.classList.toggle('max')"
+        ></button
+        ><button class="traffic-light green"></button
+        ><span class="title">Bugs</span>
+      </div>
+      <div class="content">
+        <div class="scrollarea" style="height: 375px">
+          <ul>
+            <li>Maximisation relative to window position</li>
+            <li>Window movement is choppy</li>
+            <li>Stacking order not implemented</li>
+            <li>
+              you can't minimise windows because you can't do a genie animation
+              in css ;-;
+            </li>
+            <li>the fucking top bar looks like it's on weed oh my god</li>
+            <li>
+              i spent hours trying to get the title to centre right and it won't
+            </li>
+            <li>safari is not included rofl</li>
+            <li>
+              windows7 animation doesn't work because i don't understand
+              matrices
+            </li>
+            <li>probably more</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>nya~ ^w^</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+            <li>text to test scrollarea</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script>
+      for (elem of document.querySelectorAll(".titlebar")) {
+        elem.addEventListener("mousemove", (event) => {
+          if (event.target.parentElement.classList.contains("moving")) {
+            event.target.parentElement.style.left =
+              event.clientX -
+              parseInt(elem.parentElement.style.width.slice(0, -2)) / 2 +
+              "px";
+            event.target.parentElement.style.top = event.clientY - 10 + "px";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
